@@ -1,3 +1,9 @@
 #+TITLE: Easy NXC Clojure
 
 New Clojure + ClojureScript front-end for easynxc.com.
+
+* Build
+- ~$ docker-machine restart~
+- ~$ eval "$(docker-machine env default)"\~
+- ~$ docker build -t easynxc .~
+- ~$ docker run -p 8080:8080 easynxc~

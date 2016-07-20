@@ -13,6 +13,7 @@ pom.xml.asc
 /.repl
 *.log
 /.env
+.cljs_rhino_repl
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

@@ -1,16 +1,11 @@
 (ns easynxc.handler
-  (:require [compojure.core :refer [GET defroutes]]
+  (:require [compojure.core :refer [GET POST defroutes]]
             [compojure.route :refer [not-found resources]]
             [hiccup.page :refer [include-js include-css html5]]
             [easynxc.middleware :refer [wrap-middleware]]
-            [config.core :refer [env]]))
-
-(def mount-target
-  [:div#app
-   [:h3 "ClojureScript has not been compiled!"]
-   [:p "please run "
-    [:b "lein figwheel"]
-    " in order to start the compiler"]])
+            [config.core :refer [env]]
+            [easynxc.yt :as yt]
+            [clojure.java.io :as io]))
 
 (defn head []
   [:head
@@ -24,27 +19,21 @@
   (html5
    (head)
    [:body {:class "body-container"}
-    mount-target
+    [:div#app]
     (include-js "/js/app.js")]))
 
-(def env-page
-  (html5
-   (head)
-   [:body {:class "body-container"}
-    [:p (:dev env)]]))
-
-(defn auto-start [song]
-  (html5
-   (head)
-   [:body {:class "body-container"}
-    [:div [:h1 song]]
-    (include-js "/js/app.js")]))
+(defn song [url]
+  (let [response (yt/download url)]
+    (if (response :filename)
+      {:status 200
+       :headers {"Content-Type" "audio/mpeg"}
+       :body (io/file (response :filename))}
+      {:status 500
+       :body (str (response :err))})))
 
 (defroutes routes
-  (GET "/" [] loading-page)
-  (GET "/env" [] env-page)
-  (GET "/auto-play/:song" [song] loading-page)
-  ;; (GET "/:song" [song] (auto-start song))
+  (GET "/songs/:url" [url] (song url))
+  (GET "*" [] loading-page)
   (resources "/")
   (not-found "Not Found"))
 

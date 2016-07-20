@@ -5,6 +5,6 @@
 
 (defn wrap-middleware [handler]
   (-> handler
-      (wrap-defaults site-defaults)
+      (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
       wrap-exceptions
       wrap-reload))
