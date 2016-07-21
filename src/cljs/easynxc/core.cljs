@@ -50,7 +50,7 @@
 (defonce loading (atom ""))
 
 (defonce loading-updater
-  (let [msg "LOADING..."]
+  (let [msg "LOADING"]
     (js/setInterval #(reset! loading (subs msg 0 (mod (inc (count @loading)) (inc (count msg))))) 1000)))
 
 
