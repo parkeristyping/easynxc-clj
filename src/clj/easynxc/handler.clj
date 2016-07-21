@@ -33,6 +33,7 @@
 
 (defroutes routes
   (GET "/songs/:url" [url] (song url))
+  (GET "/" [] loading-page)
   (GET "*" [] loading-page)
   (resources "/")
   (not-found "Not Found"))

@@ -1,15 +1,36 @@
 .body-container {
     font-family: 'Helvetica Neue', Verdana, Helvetica, Arial, sans-serif;
-    /* background-color: #39FF14; */
 }
 
-.player {
-    font-size: 20vh;
+div.main {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: #39FF14;
+}
+
+div.player {
+    font-size: 70vh;
+    width: 100%;
     text-align: center;
-    width:40vh;
-    height:40vh;
-    position:absolute;
-    left:50%;
-    top:50%;
-    margin:-20vh 0 0 -20vh;
+    position: absolute;
+    z-index: 2;
+}
+
+span.play-button {
+    cursor: pointer;
+}
+
+span.loading-msg {
+    font-size: 40vh;
+    cursor: default;
+}
+
+div.speed {
+    font-size: 80vh;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    z-index: 1;
+    color: blue;
 }

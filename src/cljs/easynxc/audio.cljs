@@ -1,4 +1,4 @@
-(ns easynxc.player
+(ns easynxc.audio
   (:require [goog.net.XhrIo]
             [cljs.core.async :as async :refer [<! >! chan close!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -35,6 +35,19 @@
             source (doto (.createBufferSource context)
                      (aset "buffer" buffer))]
         (.connect source (.-destination context))
-        (>! ch source)
+        (>! ch {:source source :playing? false})
         (close! ch)))
     ch))
+
+(defn start [{:keys [source playing?]}]
+  (if (not playing?)
+    (do (.start source 0)
+        {:source source :playing? true})
+    (let [context (.-context source)
+          buffer (.-buffer source)
+          new-source (doto (.createBufferSource context)
+                       (aset "buffer" buffer))]
+      (.stop source)
+      (.connect new-source (.-destination context))
+      (.start new-source 0)
+      {:source new-source :playing? true})))
