@@ -22,6 +22,6 @@ RUN pip install --upgrade youtube_dl
 # ADD target/easynxc.jar /srv/easynxc.jar
 
 # Start easynxc
-# WORKDIR /
-# EXPOSE 8080
+WORKDIR /
+EXPOSE 8080
 # CMD ["java", "-jar", "/srv/easynxc.jar"]
