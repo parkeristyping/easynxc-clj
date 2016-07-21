@@ -12,6 +12,9 @@ RUN apt-get install -y python-pip
 # Install youtube-dl
 RUN pip install --upgrade youtube_dl
 
+# Remove easynxc
+RUN rm -rf /usr/src/easynxc
+
 # Install easynxc
 RUN mkdir -p /usr/src/easynxc
 WORKDIR /usr/src/easynxc
