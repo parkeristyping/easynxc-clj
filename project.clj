@@ -18,13 +18,15 @@
                  [secretary "1.2.3"]
                  [environ "1.0.3"]
                  [venantius/accountant "0.1.7"
-                  :exclusions [org.clojure/tools.reader]]]
+                  :exclusions [org.clojure/tools.reader]]
+                 [cljs-ajax "0.5.8"]
+                 [com.cemerick/url "0.1.1"]
+                 [org.clojure/data.json "0.2.6"]]
 
   :plugins [[lein-environ "1.0.3"]
             [lein-cljsbuild "1.1.1"]
             [lein-asset-minifier "0.2.7"
-             :exclusions [org.clojure/clojure]]
-            [com.palletops/uberimage "0.4.1"]]
+             :exclusions [org.clojure/clojure]]]
   :ring {:handler easynxc.handler/app
          :uberwar-name "easynxc.war"}
   :min-lein-version "2.5.0"
