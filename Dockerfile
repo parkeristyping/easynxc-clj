@@ -13,15 +13,12 @@ RUN apt-get install -y python-pip
 RUN pip install --upgrade youtube_dl
 
 # Install easynxc
-# RUN mkdir -p /usr/src/easynxc
-# WORKDIR /usr/src/easynxc
-# COPY project.clj /usr/src/easynxc/
-# RUN lein deps
-# COPY . /usr/src/easynxc
-# RUN lein uberjar
-# ADD target/easynxc.jar /srv/easynxc.jar
+RUN mkdir -p /usr/src/easynxc
+COPY . /usr/src/easynxc
+WORKDIR /usr/src/easynxc
+RUN lein uberjar
 
 # Start easynxc
 WORKDIR /
 EXPOSE 8080
-# CMD ["java", "-jar", "/srv/easynxc.jar"]
+CMD ["java", "-jar", "/usr/src/easynxc/target/easynxc.jar"]
