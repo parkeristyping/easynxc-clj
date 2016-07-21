@@ -34,3 +34,7 @@ div.speed {
     z-index: 1;
     color: blue;
 }
+
+p {
+    font-size: 5vh;
+}

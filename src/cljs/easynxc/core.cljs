@@ -14,6 +14,15 @@
 ;; -------------------------
 ;; Views
 
+(defn home []
+  [:div {:class "main"}
+   [:p "hello and welcome to easynxc"]
+   [:p "to use the site find a video from youtube or soundcloud or something and add easynxc.com/ to the beginning of it"]
+   [:p "so if for example you wanted to try it with"]
+   [:p [:a {:href "https://www.youtube.com/watch?v=5GL9JoH4Sws"} "https://www.youtube.com/watch?v=5GL9JoH4Sws"]]
+   [:p "you'd navigate on over to..."]
+   [:p [:a {:href "/https://www.youtube.com/watch?v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?v=5GL9JoH4Sws"]]])
+
 (defn loading-screen []
   [:div {:class "main"}
    [:div {:class "player"}
@@ -77,7 +86,7 @@
 ;; Routes
 
 (secretary/defroute "/" []
-  (session/put! :current-page #'loading-screen))
+  (session/put! :current-page #'home))
 
 (secretary/defroute "/*" {base :* params :query-params}
   (load-song (song-url base params))
