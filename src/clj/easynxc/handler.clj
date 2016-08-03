@@ -4,8 +4,8 @@
             [hiccup.page :refer [include-js include-css html5]]
             [easynxc.middleware :refer [wrap-middleware]]
             [config.core :refer [env]]
-            [easynxc.yt :as yt]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [easynxc.yt :as yt]))
 
 (defn head []
   [:head

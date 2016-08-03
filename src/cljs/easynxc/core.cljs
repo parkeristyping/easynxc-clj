@@ -8,7 +8,7 @@
             [cemerick.url :as url]
             [goog.string :as gstring]
             [goog.string.format]
-            [cljs.core.async :as async :refer [<! >! chan close!]])
+            [cljs.core.async :as async :refer [put! <! >! chan close!]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
 
 ;; -------------------------
@@ -35,13 +35,17 @@
    [:div {:class "speed"}
     [:span (gstring/format "%.2f" (or (@active-audio :speed) 1))]]])
 
-(defn current-page []
+(defn current-page
+  "Gets current page from the session"
+  []
   [:div [(session/get :current-page)]])
 
 ;; -------------------------
-;; Functions
+;; Functions and stuff
 
-(defn song-url [base params]
+(defn song-url
+  "Generate URL for AJAX call to load song"
+  [base params]
   (let [raw-url (-> (url/url base)
                     (assoc :query params)
                     str)]
@@ -53,32 +57,37 @@
   (let [msg "LOADING"]
     (js/setInterval #(reset! loading (subs msg 0 (mod (inc (count @loading)) (inc (count msg))))) 1000)))
 
-
 (def speed-chan (chan))
-(defonce speedy (atom 1))
 
-(defn mouse-handler [e]
+(defn mouse-handler
+  "Parse only argument, a mouse move event, and pass to channel"
+  [e]
   (let [x (.-clientX e)
         half-width (/ (.-innerWidth js/window) 2)]
-    (go (>! speed-chan (/ x half-width)))))
+    (put! speed-chan (/ x half-width))))
 
 (go-loop []
   (let [speed (<! speed-chan)]
     (reset! active-audio (assoc @active-audio :speed speed))
-    (reset! speedy speed)
     (set! (.-value (.-playbackRate (@active-audio :source))) speed))
   (recur))
 
 (defonce active-audio (atom {:source nil :playing? false :speed 1}))
 
-(defn load-song [url]
+(defn load-song
+  "Fetch song data. When received, update active-audio atom
+   and load player page."
+  [url]
   (go
     (let [audio (<! (audio/load-audio url))]
       (reset! active-audio audio)
       (session/put! :current-page #'player))))
 
 (defonce play-button (atom "►"))
-(defn play-button-handler [_]
+(defn play-button-handler
+  "Takes any event as argument. Starts playing audio and
+   replaces play-button with restart button."
+  [_]
   (swap! active-audio audio/start)
   (reset! play-button "↻"))
 

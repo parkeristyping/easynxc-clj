@@ -13,7 +13,13 @@
 (defn get-destination [out]
   (last (re-find #"Destination: (.+)\n" out)))
 
-(defn download [url]
+(defn download
+  "Attempts to find the most appropriate audio at provided URL
+   to download using Youtube-dl. Attempts to download that audio to
+   the /tmp/ directory, returning a Hashmap with a file path (e.g.
+   {:filename '/tmp/0b6eb90d-cefc-48e0-846f-bb92cf7e5dbb.m4a'}) on
+   success. Else returns Hashmap with error (e.g. {:err 'Message'})"
+  [url]
   (let [metadata-resp (sh "youtube-dl" "--no-playlist" "-j" url)]
     (if (not= (metadata-resp :err) "")
       {:err (metadata-resp :err)}
