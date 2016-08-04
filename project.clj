@@ -21,6 +21,7 @@
                   :exclusions [org.clojure/tools.reader]]
                  [cljs-ajax "0.5.8"]
                  [com.cemerick/url "0.1.1"]
+                 [prismatic/dommy "1.1.0"]
                  [org.clojure/data.json "0.2.6"]]
 
   :plugins [[lein-environ "1.0.3"]

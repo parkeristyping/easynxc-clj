@@ -8,32 +8,34 @@
             [cemerick.url :as url]
             [goog.string :as gstring]
             [goog.string.format]
-            [cljs.core.async :as async :refer [put! <! >! chan close!]])
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
+            [cljs.core.async :as async
+             :refer [put! <! >! chan close! timeout]])
+  (:require-macros [cljs.core.async.macros :refer [go go-loop alt!]]))
 
-;; -------------------------
+;; States
+
+(defonce loading-status (atom ""))
+(defonce active-audio (atom {}))
+
 ;; Views
 
-(defn home []
-  [:div {:class "main"}
-   [:p "hello and welcome to easynxc"]
-   [:p "to use the site find a video from youtube or soundcloud or something and add easynxc.com/ to the beginning of it"]
-   [:p "so if for example you wanted to try it with"]
-   [:p [:a {:href "https://www.youtube.com/watch?v=5GL9JoH4Sws"} "https://www.youtube.com/watch?v=5GL9JoH4Sws"]]
-   [:p "you'd navigate on over to..."]
-   [:p [:a {:href "/https://www.youtube.com/watch?v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?v=5GL9JoH4Sws"]]])
+(defn loading []
+  [:div {:class "loading"} @loading-status])
 
-(defn loading-screen []
-  [:div {:class "main"}
-   [:div {:class "player"}
-    [:span {:class "loading-msg"} @loading]]])
+(defn loaded []
+  [:div {:class "big-button"}
+   [:span {:class "clickable" :on-click start-audio} "►"]])
 
-(defn player []
-  [:div {:class "main" :on-mouse-move mouse-handler}
-   [:div {:class "player"}
-    [:span {:class "play-button" :on-click play-button-handler} @play-button]]
-   [:div {:class "speed"}
-    [:span (gstring/format "%.2f" (or (@active-audio :speed) 1))]]])
+(defn playing []
+  (let [update-speed (speed-controller (speed-updater))]
+    [:div
+     [:div {:class "mini-controls"}
+      [:span {:class "mini-control-button" :on-click restart-audio} "↻"]]
+     [:div {:on-mouse-move update-speed
+            :on-click (fn [e] (do (update-speed e) (lock-speed e)))
+            :class (str "big-center-text "
+                        (if (@active-audio :locked?) "venusaur" "ivysaur"))}
+      (gstring/format "%.2f" (@active-audio :speed))]]))
 
 (defn current-page
   "Gets current page from the session"
@@ -51,55 +53,72 @@
                     str)]
     (str "/songs/" (url/url-encode raw-url))))
 
-(defonce loading (atom ""))
+(defn start-loading [msg]
+  (let [kill-ch (chan)]
+    (go-loop []
+      (reset! loading-status (subs msg 0 (mod (inc (count @loading-status)) (inc (count msg)))))
+      (let [timeout-ch (timeout 1000)]
+        (alt!
+          timeout-ch (recur)
+          kill-ch :done)))
+    kill-ch))
 
-(defonce loading-updater
-  (let [msg "LOADING"]
-    (js/setInterval #(reset! loading (subs msg 0 (mod (inc (count @loading)) (inc (count msg))))) 1000)))
-
-(def speed-chan (chan))
-
-(defn mouse-handler
-  "Parse only argument, a mouse move event, and pass to channel"
-  [e]
-  (let [x (.-clientX e)
-        half-width (/ (.-innerWidth js/window) 2)]
-    (put! speed-chan (/ x half-width))))
-
-(go-loop []
-  (let [speed (<! speed-chan)]
-    (reset! active-audio (assoc @active-audio :speed speed))
-    (set! (.-value (.-playbackRate (@active-audio :source))) speed))
-  (recur))
-
-(defonce active-audio (atom {:source nil :playing? false :speed 1}))
-
-(defn load-song
-  "Fetch song data. When received, update active-audio atom
-   and load player page."
-  [url]
+(defn load-audio [loading-chan]
   (go
-    (let [audio (<! (audio/load-audio url))]
+    (let [audio (<! (audio/load-audio @active-audio))]
       (reset! active-audio audio)
-      (session/put! :current-page #'player))))
+      (put! loading-chan :stop)
+      (session/put! :current-page #'loaded))))
 
-(defonce play-button (atom "►"))
-(defn play-button-handler
-  "Takes any event as argument. Starts playing audio and
-   replaces play-button with restart button."
-  [_]
+(defn start-audio [_]
   (swap! active-audio audio/start)
-  (reset! play-button "↻"))
+  (session/put! :current-page #'playing))
+
+(defn restart-audio [_]
+  (swap! active-audio audio/start))
+
+(defn speed-controller [speed-ch]
+  (fn [e]
+    (let [x (.-clientX e)
+          half-width (/ (.-innerWidth js/window) 2)]
+      (put! speed-ch (/ x half-width)))))
+
+(defn speed-updater []
+  (let [speed-ch (chan)]
+    (go-loop []
+      (let [speed (<! speed-ch)]
+        (if (not (@active-audio :locked?))
+          (do
+            (swap! active-audio #(assoc % :speed speed))
+            (set! (.-value (.-playbackRate (@active-audio :source))) speed))))
+      (recur))
+    speed-ch))
+
+(defn lock-speed [_]
+  (update-params! "nxc" (gstring/format "%.3f" (@active-audio :speed)))
+  (swap! active-audio #(assoc % :locked? (not (@active-audio :locked?)))))
+
+(defn update-params! [k v]
+  (let [url (url/url js/window.location.search)
+        nxc ((:query url) k)
+        new-url (if nxc
+                  (update-in url [:query] dissoc k)
+                  (assoc-in url [:query k] v))
+        query (str/replace (str new-url) #"^://" "")]
+    (.pushState js/window.history nil nil query)))
 
 ;; -------------------------
 ;; Routes
 
-(secretary/defroute "/" []
-  (session/put! :current-page #'home))
-
 (secretary/defroute "/*" {base :* params :query-params}
-  (load-song (song-url base params))
-  (session/put! :current-page #'loading-screen))
+  (reset! active-audio
+          {:url (song-url base (dissoc params :nxc))
+           :playing? false
+           :speed (or (params :nxc) 1)
+           :locked? (some? (params :nxc))
+           :source nil})
+  (load-audio (start-loading "LOADING"))
+  (session/put! :current-page #'loading))
 
 ;; -------------------------
 ;; Initialize app

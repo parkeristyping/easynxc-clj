@@ -24,7 +24,7 @@
       (.send url "GET"))
     ch))
 
-(defn load-audio [url]
+(defn load-audio [{:keys [:url] :as active-audio}]
   (let [ch (chan)]
     (go
       (let [response (<! (get-audio url))
@@ -35,19 +35,22 @@
             source (doto (.createBufferSource context)
                      (aset "buffer" buffer))]
         (.connect source (.-destination context))
-        (>! ch {:source source :playing? false})
+        (>! ch (assoc active-audio :source source))
         (close! ch)))
     ch))
 
-(defn start [{:keys [source playing?]}]
+(defn start [{:keys [:playing? :source :speed] :as active-audio}]
   (if (not playing?)
-    (do (.start source 0)
-        {:source source :playing? true})
+    (do
+      (set! (.-value (.-playbackRate source)) speed)
+      (.start source 0)
+      (assoc (assoc active-audio :playing? true) :source source))
     (let [context (.-context source)
           buffer (.-buffer source)
           new-source (doto (.createBufferSource context)
                        (aset "buffer" buffer))]
       (.stop source)
       (.connect new-source (.-destination context))
+      (set! (.-value (.-playbackRate new-source)) speed)
       (.start new-source 0)
-      {:source new-source :playing? true})))
+      (assoc active-audio :source new-source))))
