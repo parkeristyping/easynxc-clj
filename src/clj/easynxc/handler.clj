@@ -21,12 +21,10 @@
    [:body {:class "body-container"}
     [:div#app
      [:div {:class "main"}
-      [:p "hello and welcome to easynxc"]
-      [:p "to use the site find a video from youtube or soundcloud or something and add easynxc.com/ to the beginning of it"]
-      [:p "so if for example you wanted to try it with"]
-      [:p [:a {:href "https://www.youtube.com/watch?v=5GL9JoH4Sws"} "https://www.youtube.com/watch?v=5GL9JoH4Sws"]]
-      [:p "you'd navigate on over to..."]
-      [:p [:a {:href "/https://www.youtube.com/watch?v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?v=5GL9JoH4Sws"]]]]]))
+      [:p "hello and welcome to easynxc. to use this site find a video from youtube or soundcloud or something and add \"easynxc.com/\" to the beginning of it"]
+      [:p "so if for example you wanted to try it with " [:a {:href "https://www.youtube.com/watch?v=5GL9JoH4Sws"} "https://www.youtube.com/watch?v=5GL9JoH4Sws"] ", you'd go to " [:a {:href "/https://www.youtube.com/watch?v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?v=5GL9JoH4Sws"]]
+      [:p "click the mouse to lock/unlock your speed. when locked, your speed gets added to the URL so you can share with friends. i like the example at about 1.4x " [:a {:href "/https://www.youtube.com/watch?nxc=1.40&v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?nxc=1.40&v=5GL9JoH4Sws"]]
+      [:p [:a {:href "https://github.com/parkeristyping/easynxc-clj"} "github"]]]]]))
 
 (def loading-page
   (html5
