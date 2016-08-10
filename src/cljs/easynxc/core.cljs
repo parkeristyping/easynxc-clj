@@ -114,8 +114,8 @@
   (reset! active-audio
           {:url (song-url base (dissoc params :nxc))
            :playing? false
-           :speed (or (params :nxc) 1)
-           :locked? (some? (params :nxc))
+           :speed (or (:nxc params) 1)
+           :locked? (some? (:nxc params))
            :source nil})
   (load-audio (start-loading "LOADING"))
   (session/put! :current-page #'loading))
