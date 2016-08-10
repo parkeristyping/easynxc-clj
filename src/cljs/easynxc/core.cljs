@@ -100,11 +100,11 @@
 
 (defn update-params! [k v]
   (let [url (url/url js/window.location.search)
-        nxc ((:query url) k)
+        nxc (if (:query url) ((:query url) k))
         new-url (if nxc
                   (update-in url [:query] dissoc k)
                   (assoc-in url [:query k] v))
-        query (str/replace (str new-url) #"^://" "")]
+        query (if (not= {} (:query new-url)) (str/replace (str new-url) #"^://" "") "?")]
     (.pushState js/window.history nil nil query)))
 
 ;; -------------------------
