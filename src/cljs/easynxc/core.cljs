@@ -86,7 +86,6 @@
   (fn [e]
     (let [x (.-clientX e)
           new-speed (/ x (/ (.-innerWidth js/window) 2))]
-      (.log js/console new-speed)
       (put! speed-ch new-speed))))
 
 (defn touch-speed-controller [speed-ch]

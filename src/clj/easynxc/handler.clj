@@ -15,23 +15,25 @@
    [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css"}]
    (include-css (if (env :dev) "/css/site.css" "/css/site.min.css"))])
 
+
 (def home-page
   (html5
    (head)
-   [:body {:class "body-container"}
+   [:body
     [:div#app
-     [:div {:class "main"}
-      [:p "hello and welcome to easynxc. to use this site find a video from youtube or soundcloud or something and add \"easynxc.com/\" to the beginning of the URL"]
-      [:p "so if for example you wanted to try it with " [:a {:href "https://www.youtube.com/watch?v=5GL9JoH4Sws"} "https://www.youtube.com/watch?v=5GL9JoH4Sws"] ", you'd go to " [:a {:href "/https://www.youtube.com/watch?v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?v=5GL9JoH4Sws"]]
-      [:p "move the mouse to change speed, and click to lock/unlock your speed. when locked, your speed gets added to the URL so you can share with friends. i like the example at about 1.4x " [:a {:href "/https://www.youtube.com/watch?nxc=1.40&v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?nxc=1.40&v=5GL9JoH4Sws"]]
-      [:p [:a {:href "https://github.com/parkeristyping/easynxc-clj"} "github"]]]]]))
+     [:p "this is a site for changing the speed of songs"]
+     [:p "find a song on youtube or soundcloud or something and add \"easynxc.com/\" to the beginning of the URL"]
+     [:p "example: " [:a {:href "/https://www.youtube.com/watch?v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?v=5GL9JoH4Sws"]]
+     [:p [:a {:href "https://github.com/parkeristyping/easynxc-clj"} "github"]]]
+    (include-js "/js/google-analytics.js")]))
 
 (def loading-page
   (html5
    (head)
-   [:body {:class "body-container"}
+   [:body
     [:div#app]
-    (include-js "/js/app.js")]))
+    (include-js "/js/app.js")
+    (include-js "/js/google-analytics.js")]))
 
 (defn song [url]
   (let [response (yt/download url)]
