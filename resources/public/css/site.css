@@ -10,6 +10,7 @@ p {
 div.mini-controls {
   padding-left: 2vh;
   position: absolute;
+  z-index: 100;
 }
 
 span.mini-control-button {
@@ -52,4 +53,31 @@ div.big-center-text {
 .venusaur {
   cursor: url(/images/venusaur.png), default;
   color: orange;
+}
+
+@media only screen and (max-width: 479px) {
+  div.loading {
+    margin-top: 40vh;
+    text-align: center;
+    font-size: 10vh;
+    cursor: default;
+  }
+
+  div.big-button {
+    margin-top: 25vh;
+    text-align: center;
+    font-size: 40vh;
+  }
+
+  div.big-center-text {
+    padding-top: 35vh;
+    font-size: 20vh;
+  }
+
+  div.mobile-interaction-layer {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+  }
 }
