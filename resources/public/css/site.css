@@ -8,6 +8,11 @@ p {
 }
 
 div.mini-controls {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   padding-left: 2vh;
   position: absolute;
   z-index: 100;
@@ -26,6 +31,11 @@ div.loading {
 }
 
 div.big-button {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   margin-top: 5vh;
   text-align: center;
   font-size: 70vh;
