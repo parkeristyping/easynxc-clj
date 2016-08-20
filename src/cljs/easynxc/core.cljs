@@ -27,12 +27,17 @@
    [:span {:class "clickable" :on-click start-audio} "►"]])
 
 (defn playing []
-  (let [update-speed (speed-controller (speed-updater))]
+  (let [speed-ch (make-speed-ch)
+        mouse-update-speed (mouse-speed-controller speed-ch)
+        touch-update-speed (touch-speed-controller speed-ch)]
     [:div
+     [:div {:class "mobile-interaction-layer"
+            :on-touch-move touch-update-speed
+            :on-touch-end (fn [] (if (not (@active-audio :locked?)) (lock-speed)))}]
      [:div {:class "mini-controls"}
       [:span {:class "mini-control-button" :on-click restart-audio} "↻"]]
-     [:div {:on-mouse-move update-speed
-            :on-click (fn [e] (do (update-speed e) (lock-speed e)))
+     [:div {:on-mouse-move mouse-update-speed
+            :on-click (fn [e] (do (mouse-update-speed e) (lock-speed)))
             :class (str "big-center-text "
                         (if (@active-audio :locked?) "venusaur" "ivysaur"))}
       (gstring/format "%.2f" (@active-audio :speed))]]))
@@ -77,13 +82,23 @@
 (defn restart-audio [_]
   (swap! active-audio audio/start))
 
-(defn speed-controller [speed-ch]
+(defn mouse-speed-controller [speed-ch]
   (fn [e]
     (let [x (.-clientX e)
-          half-width (/ (.-innerWidth js/window) 2)]
-      (put! speed-ch (/ x half-width)))))
+          new-speed (/ x (/ (.-innerWidth js/window) 2))]
+      (.log js/console new-speed)
+      (put! speed-ch new-speed))))
 
-(defn speed-updater []
+(defn touch-speed-controller [speed-ch]
+  (fn [e]
+    (let [x (aget e "touches" 0 "pageY")
+          new-speed (- 2 (/ x (/ (.-innerHeight js/window) 2)))]
+      (do
+        (.preventDefault e)
+        (if (@active-audio :locked?) (lock-speed))
+        (put! speed-ch new-speed)))))
+
+(defn make-speed-ch []
   (let [speed-ch (chan)]
     (go-loop []
       (let [speed (<! speed-ch)]
@@ -94,7 +109,7 @@
       (recur))
     speed-ch))
 
-(defn lock-speed [_]
+(defn lock-speed []
   (update-params! "nxc" (gstring/format "%.3f" (@active-audio :speed)))
   (swap! active-audio #(assoc % :locked? (not (@active-audio :locked?)))))
 
