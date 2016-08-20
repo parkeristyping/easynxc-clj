@@ -30,7 +30,7 @@
 (def loading-page
   (html5
    (head)
-   [:body {:class "body-container"}
+   [:body
     [:div#app]
     (include-js "/js/app.js")]))
 
