@@ -32,7 +32,8 @@
    (head)
    [:body
     [:div#app]
-    (include-js "/js/app.js")]))
+    (include-js "/js/app.js")
+    (include-js "/js/google-analytics.js")]))
 
 (defn song [url]
   (let [response (yt/download url)]
