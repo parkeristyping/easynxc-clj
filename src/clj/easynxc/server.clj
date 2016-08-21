@@ -9,6 +9,6 @@
   (let [port (Integer/parseInt (or (env :port) "8080"))]
     (do
       ;; start a scheduled job to regularly delete old tmp files
-      (run-deleter "/tmp" 60 300)
+      (run-deleter "/tmp" 300 300)
       ;; run the server
       (run-jetty app {:port port :join? false}))))
