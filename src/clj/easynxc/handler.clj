@@ -44,10 +44,10 @@
        :body (str (response :err))})))
 
 (defroutes routes
-  (resources "/")
   (GET "/songs/:url" [url] (song url))
   (GET "/" [] home-page)
   (GET "/*" [] loading-page)
+  (resources "/")
   (not-found "Not Found"))
 
 (def app (wrap-middleware #'routes))
