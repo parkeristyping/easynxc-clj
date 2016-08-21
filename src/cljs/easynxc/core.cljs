@@ -124,7 +124,7 @@
 ;; -------------------------
 ;; Routes
 
-(secretary/defroute "^(?!\/js\/)(?!\/css\/)(?!\/images\/).+" {base :* params :query-params}
+(secretary/defroute "/*" {base :* params :query-params}
   (reset! active-audio
           {:url (song-url base (dissoc params :nxc))
            :playing? false
@@ -133,6 +133,8 @@
            :source nil})
   (load-audio (start-loading "LOADING"))
   (session/put! :current-page #'loading))
+
+;; ^(?!\/js\/)(?!\/css\/)(?!\/images\/).+
 
 ;; -------------------------
 ;; Initialize app
