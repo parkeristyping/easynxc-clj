@@ -124,7 +124,7 @@
 ;; -------------------------
 ;; Routes
 
-(secretary/defroute "/*" {base :* params :query-params}
+(secretary/defroute "^(?!\/js\/)(?!\/css\/)(?!\/images\/).+" {base :* params :query-params}
   (reset! active-audio
           {:url (song-url base (dissoc params :nxc))
            :playing? false
