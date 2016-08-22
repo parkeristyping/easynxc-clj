@@ -25,14 +25,14 @@
      [:p "find a song on youtube or soundcloud or something and add \"easynxc.com/\" to the beginning of the URL"]
      [:p "example: " [:a {:href "/https://www.youtube.com/watch?v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?v=5GL9JoH4Sws"]]
      [:p [:a {:href "https://github.com/parkeristyping/easynxc-clj"} "github"]]]
-    (include-js "/images/google-analytics.js")]))
+    (include-js "/javascripts/google-analytics.js")]))
 
 (def loading-page
   (html5
    (head)
    [:body
     [:div#app]
-    (include-js "/js/app.js" "/images/google-analytics.js")]))
+    (include-js "/js/app.js" "/javascripts/google-analytics.js")]))
 
 (defn song [url]
   (let [response (yt/download url)]
