@@ -134,6 +134,8 @@
   (load-audio (start-loading "LOADING"))
   (session/put! :current-page #'loading))
 
+;; ^(?!\/js\/)(?!\/css\/)(?!\/images\/).+
+
 ;; -------------------------
 ;; Initialize app
 

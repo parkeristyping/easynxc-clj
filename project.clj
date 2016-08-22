@@ -21,7 +21,9 @@
                   :exclusions [org.clojure/tools.reader]]
                  [cljs-ajax "0.5.8"]
                  [com.cemerick/url "0.1.1"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [jarohen/chime "0.1.9"]
+                 [com.taoensso/timbre "4.7.0"]]
 
   :plugins [[lein-environ "1.0.3"]
             [lein-cljsbuild "1.1.1"]

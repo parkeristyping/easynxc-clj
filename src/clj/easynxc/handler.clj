@@ -13,8 +13,8 @@
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1"}]
    [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css"}]
+   [:link {:rel "icon" :type "image/png" :href "/images/icon-512.png"}]
    (include-css (if (env :dev) "/css/site.css" "/css/site.min.css"))])
-
 
 (def home-page
   (html5
@@ -25,15 +25,14 @@
      [:p "find a song on youtube or soundcloud or something and add \"easynxc.com/\" to the beginning of the URL"]
      [:p "example: " [:a {:href "/https://www.youtube.com/watch?v=5GL9JoH4Sws"} "easynxc.com/https://www.youtube.com/watch?v=5GL9JoH4Sws"]]
      [:p [:a {:href "https://github.com/parkeristyping/easynxc-clj"} "github"]]]
-    (include-js "/js/google-analytics.js")]))
+    (include-js "/javascripts/google-analytics.js")]))
 
 (def loading-page
   (html5
    (head)
    [:body
     [:div#app]
-    (include-js "/js/app.js")
-    (include-js "/js/google-analytics.js")]))
+    (include-js "/js/app.js" "/javascripts/google-analytics.js")]))
 
 (defn song [url]
   (let [response (yt/download url)]
@@ -47,7 +46,7 @@
 (defroutes routes
   (GET "/songs/:url" [url] (song url))
   (GET "/" [] home-page)
-  (GET "*" [] loading-page)
+  (GET "/*" [] loading-page)
   (resources "/")
   (not-found "Not Found"))
 
