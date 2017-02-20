@@ -14,6 +14,7 @@
            :content "width=device-width, initial-scale=1"}]
    [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css"}]
    [:link {:rel "icon" :type "image/png" :href "/images/icon-512.png"}]
+   [:title "easynxc"]
    (include-css (if (env :dev) "/css/site.css" "/css/site.min.css"))])
 
 (def home-page
